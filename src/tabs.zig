@@ -49,13 +49,19 @@ pub fn main() !void {
 }
 
 fn displayTabs(tab_idx: usize) !void {
+    _ = c.move(0, 0);
+    _ = c.hline('*', c.COLS);
     for (tabs, 0..) |tab, idx| {
+        const cols: c_int = @intCast(idx * (@as(usize, @intCast(c.COLS)) / tabs.len));
+        _ = c.vline('|', 1);
         if (idx == tab_idx) _ = c.attron(c.A_REVERSE);
         var title_buf: [20]u8 = .{ 0 } ** 20;
         const title = try fmt.bufPrint(title_buf[0..], "{s}\t", .{ tab.title });
-        _ = c.printw(title[0..].ptr);
+        _ = c.mvprintw(1, cols + 2, title[0..].ptr);
+        //_ = c.printw(title[0..].ptr);
         _ = c.attroff(c.A_REVERSE);
     }
+    _ = c.hline('*', c.COLS);
 }
 
 fn displayContents(tab_idx: usize) !void {
